@@ -1,0 +1,7 @@
+Dataset,Execution Time
+small_atac_windows,322.0778847
+small_atac_peaks,348.7154591
+small_atac_gene_activity,328.4546225
+human_pancreas_norm_complexBatch,475.0246532
+Lung_atlas_public,590.3470571
+Immune_ALL_hum_mou,582.3572228
