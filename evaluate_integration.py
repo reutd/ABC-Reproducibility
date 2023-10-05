@@ -5,7 +5,7 @@ import scib as scIB
 # most of the code was dapted from the published pipeline at
 # https://github.com/theislab/scib-pipeline/blob/main/scripts/metrics/metrics.py
 def evaluate_integration(orig_dataset, integ_dataset, eval_params, batch_key, label_key='celltype',
-                         data_type='RNA', organism='mouse', bio_con_w=0.5):
+                         data_type='RNA', organism='mouse', bio_con_w=0.5, output_type='full'):
     """Evaluates the integration using the scib package according to the selected metrics in the eval_params dictionary.
 
     Parameters:
@@ -18,12 +18,14 @@ def evaluate_integration(orig_dataset, integ_dataset, eval_params, batch_key, la
         data_type (String): Either 'RNA" for scRNA seq data or 'ATAC' for ATAC seq data.
         organism (String): Either 'mouse' or 'human'. Used for cell cycle evaluation. Default: 'mouse'.
         bio_con_w (float): The weight of the biological variance conservation score should have in the final score.
+        output_type (String): Either 'full' for corrected gene matrix output or 'embed' for corrected embeddings.
 
     Returns:
         metrics: A dataframe holding the metric names as row names and the metric score in the first column.
 
     """
 
+    # for full expression matrix, default settings
     precompute_pca = True
     recompute_neighbors = True
     embed = 'X_pca'
@@ -48,10 +50,10 @@ def evaluate_integration(orig_dataset, integ_dataset, eval_params, batch_key, la
     # don't calculate cell cycle score and HVG for ATAC dataset
     if data_type == 'ATAC':
         eval_params['cell_cycle_'] = False
-        eval_params['hvg_overlap'] = False
+        eval_params['hvg_overlap_'] = False
     else:
         eval_params['cell_cycle_'] = True
-        eval_params['hvg_overlap'] = True
+        eval_params['hvg_overlap_'] = True
 
     # if pseudotime information does not exist, do not compute trajectory score
     if 'dpt_pseudotime' not in orig_dataset.obs or 'dpt_pseudotime' not in integ_dataset.obs:
@@ -60,12 +62,27 @@ def evaluate_integration(orig_dataset, integ_dataset, eval_params, batch_key, la
         eval_params['trajectory_'] = True
 
 
+    # distinguish between embedded and full expression outputs
+    # compute HVGs only if output is not already subsetted
+    if orig_dataset.n_vars > integ_dataset.n_vars:
+        n_hvgs = None
+
+    # embedding output
+    if output_type == "embed":
+        n_hvgs = None
+        embed = "X_emb"
+        # legacy check
+        if ('emb' in integ_dataset.uns) and (integ_dataset.uns['emb']):
+            integ_dataset.obsm["X_emb"] = integ_dataset.obsm["X_pca"].copy()
+
+
+
     # preprocess data (PCA, neighbors graph and HVG)
     scIB.preprocessing.reduce_data(integ_dataset, n_top_genes=n_hvgs, neighbors=recompute_neighbors, use_rep=embed,
                                    batch_key=batch_key, pca=precompute_pca, umap=False)
 
     metrics = scIB.me.metrics(orig_dataset, integ_dataset, verbose=True, batch_key=batch_key, label_key=label_key,
-                              hvg_score_=eval_params['hvg_score_'],
+                              hvg_score_=eval_params['hvg_overlap_'],
                               nmi_=eval_params['nmi_'],
                               ari_=eval_params['ari_'],
                               nmi_method='arithmetic',
@@ -78,7 +95,8 @@ def evaluate_integration(orig_dataset, integ_dataset, eval_params, batch_key, la
                               kBET_=False,
                               lisi_graph_=eval_params['lisi_graph_'],
                               trajectory_=eval_params['trajectory_'],
-                              type_='full',
+                              embed=embed,
+                              type_=output_type,
                               )
 
     # calculate averages

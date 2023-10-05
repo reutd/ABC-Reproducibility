@@ -11,7 +11,7 @@ import matplotlib
 # import random
 
 
-def plot_datasets(data, categories, save_path, dpi, baseName):
+def plot_datasets(data, categories, save_path, dpi, baseName, use_emb=False):
 
     # set plot params
     matplotlib.rc('ytick', labelsize=14)
@@ -21,8 +21,13 @@ def plot_datasets(data, categories, save_path, dpi, baseName):
     sc.settings.figdir = save_path
 
     # build necessary data structures
-    sc.pp.pca(data, svd_solver="arpack")
-    sc.pp.neighbors(data, n_neighbors=25)
+    if use_emb:
+      sc.pp.neighbors(data, n_neighbors=25, use_rep = 'X_emb')
+
+    else:
+      sc.pp.pca(data, svd_solver="arpack")
+      sc.pp.neighbors(data, n_neighbors=25)
+
     sc.tl.umap(data, random_state=42)
 
     # create plots per category
