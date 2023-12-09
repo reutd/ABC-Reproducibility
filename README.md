@@ -2,7 +2,7 @@
 
 This repository holds scripts and results of a comparison made between ABC (a single cell sequencing 
 data integration method) and the following integration methods: scgen, AutoClass, scanorama, combat,
-Seurat, scVI, scANVI, harmony, CLEAR and scDREAMER. 
+Seurat, scVI, scANVI, Harmony, CLEAR and scDREAMER. 
 
 ABC (Autoencoder-based Batch Correction) is a semi-supervised deep learning architecture for integrating
 single cell sequencing datasets. This method removes batch effects through a guided process of data compression
