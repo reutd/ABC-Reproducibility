@@ -28,4 +28,4 @@ balance between batch effect correction and biological variance conservation sco
 ![batch correction VS biological variance conservation](results/plots/metrics/methods_comparison.png)
 
 Full results can be found under "results/final_metrics" and a visualization of these results can be found
-under "results/final_plots/metrics"
+under "results/plots/metrics"
