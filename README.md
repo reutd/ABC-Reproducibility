@@ -2,7 +2,7 @@
 
 This repository holds scripts and results of a comparison made between ABC (a single cell sequencing 
 data integration method) and the following integration methods: scgen, AutoClass, scanorama, combat,
-Seurat, scVI and scANVI. 
+Seurat, scVI, scANVI, harmony, CLEAR and scDREAMER. 
 
 ABC (Autoencoder-based Batch Correction) is a semi-supervised deep learning architecture for integrating
 single cell sequencing datasets. This method removes batch effects through a guided process of data compression
@@ -25,7 +25,7 @@ Comparing the average results on four datasets: Human And Mouse Immune Cells, Hu
 Small mouse brain (ATAC) Peaks, Small mouse brain (ATAC) Windows, ABC displays a very good
 balance between batch effect correction and biological variance conservation scores.
 
-![batch correction VS biological variance conservation](results/final_plots/metrics/batchVsBiocon-stdev-noTitle.png)
+![batch correction VS biological variance conservation](results/plots/metrics/methods_comparison.png)
 
 Full results can be found under "results/final_metrics" and a visualization of these results can be found
 under "results/final_plots/metrics"
